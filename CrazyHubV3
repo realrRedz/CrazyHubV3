@@ -137,4 +137,106 @@ local function showGui()
     title.TextScaled = true
     title.Font = Enum.Font.GothamBold
     title.Parent = main
+
+-- Function to create a toggle button
+local toggles = {}
+
+local function makeCheckToggle(text, yPos)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -30, 0, 40)
+    row.Position = UDim2.new(0, 15, 0, yPos)
+    row.BackgroundTransparency = 1
+    row.Parent = main
+
+    local txt = Instance.new("TextLabel")
+    txt.Size = UDim2.new(1, -40, 1, 0)
+    txt.Position = UDim2.new(0, 0, 0, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = text
+    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txt.TextSize = 16
+    txt.Font = Enum.Font.Gotham
+    txt.TextXAlignment = Enum.TextXAlignment.Left
+    txt.Parent = row
+
+    local checkmark = Instance.new("TextButton")
+    checkmark.Size = UDim2.new(0, 30, 0, 30)
+    checkmark.Position = UDim2.new(1, -30, 0.5, -15)
+    checkmark.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    checkmark.Text = ""
+    checkmark.Parent = row
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = checkmark
+
+    local checkLabel = Instance.new("TextLabel")
+    checkLabel.Size = UDim2.new(1, 0, 1, 0)
+    checkLabel.BackgroundTransparency = 1
+    checkLabel.Text = ""
+    checkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    checkLabel.TextSize = 18
+    checkLabel.Font = Enum.Font.GothamBold
+    checkLabel.Parent = checkmark
+
+    toggles[text] = false
+
+    checkmark.MouseButton1Click:Connect(function()
+        toggles[text] = not toggles[text]
+        checkLabel.Text = toggles[text] and "✔" or ""
+
+        -- Tween for smooth color change
+        local goal = {BackgroundColor3 = toggles[text] and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(40, 40, 40)}
+        local tween = TweenService:Create(checkmark, TweenInfo.new(0.2), goal)
+        tween:Play()
+    end)
+end
+
+-- Create toggles
+makeCheckToggle("Start Trade Assist", 50)
+makeCheckToggle("Freeze Trade", 100)
+makeCheckToggle("Auto Ready Trade", 150)
+
+-- Dragging Feature (FIXED)
+local dragging, dragStart, startPos
+
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = UDim2.new(
+            main.Position.X.Scale,
+            main.Position.X.Offset,
+            main.Position.Y.Scale,
+            main.Position.Y.Offset
+        )
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Show GUI Function (Call this after loading screen is gone)
+local function showGui()
+    main.Visible = true
+end
+
+-- Example usage (Call this when the loading screen is removed)
+showGui()
+
 end
