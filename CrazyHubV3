@@ -1,0 +1,281 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Create the ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+-- Create the ScreenGui
+gui.IgnoreGuiInset = true -- This will ensure the UI ignores the top bar offset
+gui.Name = "LoadingScreen"
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Fullscreen Background
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+background.Parent = gui
+
+-- Main Loading Box
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0.4, 0, 0.4, 0)
+loadingFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+loadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+loadingFrame.BorderSizePixel = 2
+loadingFrame.BorderColor3 = Color3.fromRGB(200, 50, 50)
+loadingFrame.Parent = background
+Instance.new("UICorner", loadingFrame).CornerRadius = UDim.new(0, 10)
+
+-- Title Text
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0.15, 0)
+title.Position = UDim2.new(0, 0, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = "BLOX FRUITS"
+title.TextColor3 = Color3.fromRGB(255, 100, 100)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = loadingFrame
+
+-- Subtitle Text
+local subTitle = Instance.new("TextLabel")
+subTitle.Size = UDim2.new(1, 0, 0.1, 0)
+subTitle.Position = UDim2.new(0, 0, 0.2, 0)
+subTitle.BackgroundTransparency = 1
+subTitle.Text = "Loading Script..."
+subTitle.TextColor3 = Color3.fromRGB(200, 50, 50)
+subTitle.TextScaled = true
+subTitle.Font = Enum.Font.Gotham
+subTitle.Parent = loadingFrame
+
+-- Progress Bar Background
+local progressBarBG = Instance.new("Frame")
+progressBarBG.Size = UDim2.new(0.8, 0, 0.07, 0)
+progressBarBG.Position = UDim2.new(0.1, 0, 0.4, 0)
+progressBarBG.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+progressBarBG.Parent = loadingFrame
+Instance.new("UICorner", progressBarBG).CornerRadius = UDim.new(0, 10)
+
+-- Progress Bar Fill
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+progressBar.Parent = progressBarBG
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 10)
+
+-- Progress Percentage Text
+local progressText = Instance.new("TextLabel")
+progressText.Size = UDim2.new(1, 0, 1, 0)
+progressText.BackgroundTransparency = 1
+progressText.Text = "1%"
+progressText.TextColor3 = Color3.fromRGB(255, 255, 255)
+progressText.TextScaled = true
+progressText.Font = Enum.Font.GothamBold
+progressText.Parent = progressBarBG
+
+-- Status Text
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(1, 0, 0.1, 0)
+statusText.Position = UDim2.new(0, 0, 0.55, 0)
+statusText.BackgroundTransparency = 1
+statusText.Text = "Starting up..."
+statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusText.TextScaled = true
+statusText.Font = Enum.Font.Gotham
+statusText.Parent = loadingFrame
+
+-- Warning Text
+local warningText = Instance.new("TextLabel")
+warningText.Size = UDim2.new(1, 0, 0.1, 0)
+warningText.Position = UDim2.new(0, 0, 0.7, 0)
+warningText.BackgroundTransparency = 1
+warningText.Text = "Do not leave the game during loading."
+warningText.TextColor3 = Color3.fromRGB(200, 50, 50)
+warningText.TextScaled = true
+warningText.Font = Enum.Font.Gotham
+warningText.Parent = loadingFrame
+
+-- Discord Button
+local discordButton = Instance.new("TextButton")
+discordButton.Size = UDim2.new(0.6, 0, 0.15, 0)
+discordButton.Position = UDim2.new(0.2, 0, 0.85, 0)
+discordButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+discordButton.Text = "JOIN DISCORD"
+discordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+discordButton.TextScaled = true
+discordButton.Font = Enum.Font.GothamBold
+discordButton.Parent = loadingFrame
+Instance.new("UICorner", discordButton).CornerRadius = UDim.new(0, 10)
+
+-- Discord Button Click (Open Link)
+discordButton.MouseButton1Click:Connect(function()
+    local success, err = pcall(function()
+        UserInputService:OpenUrl("https://discord.gg/YOUR_DISCORD_LINK")
+    end)
+    if not success then
+        warn("Failed to open Discord link: " .. err)
+    end
+end)
+
+-- Function to Simulate Loading (30 seconds)
+local function startLoading()
+    for i = 1, 100 do
+        -- Animate progress bar
+        TweenService:Create(progressBar, TweenInfo.new(0.3, Enum.EasingStyle.Linear), {Size = UDim2.new(i / 100, 0, 1, 0)}):Play()
+        -- Update progress text
+        progressText.Text = i .. "%"
+        
+        -- Update status messages
+        if i < 30 then
+            statusText.Text = "Initializing..."
+        elseif i < 60 then
+            statusText.Text = "Connecting to the server..."
+        elseif i < 90 then
+            statusText.Text = "Finalizing setup..."
+        else
+            statusText.Text = "Almost ready..."
+        end
+        
+        wait(0.3) -- 0.3 seconds per update (100 updates = 30 seconds)
+    end
+    gui:Destroy() -- Remove UI after loading is complete
+end
+
+task.spawn(startLoading)
+
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 300, 0, 200)
+main.Position = UDim2.new(0.5, -150, 0.5, -100)
+main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+main.BorderSizePixel = 0
+main.Visible = false -- Hide initially
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = main
+
+-- Title Bar
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundTransparency = 1
+titleBar.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -30, 1, 0)
+title.Position = UDim2.new(0, 15, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Crazy Hub | BLOX FRUITS"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 18
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = titleBar
+
+-- Function to create a toggle button
+local toggles = {}
+
+local function makeCheckToggle(text, yPos)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -30, 0, 40)
+    row.Position = UDim2.new(0, 15, 0, yPos)
+    row.BackgroundTransparency = 1
+    row.Parent = main
+
+    local txt = Instance.new("TextLabel")
+    txt.Size = UDim2.new(1, -40, 1, 0)
+    txt.Position = UDim2.new(0, 0, 0, 0)
+    txt.BackgroundTransparency = 1
+    txt.Text = text
+    txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txt.TextSize = 16
+    txt.Font = Enum.Font.Gotham
+    txt.TextXAlignment = Enum.TextXAlignment.Left
+    txt.Parent = row
+
+    local checkmark = Instance.new("TextButton")
+    checkmark.Size = UDim2.new(0, 30, 0, 30)
+    checkmark.Position = UDim2.new(1, -30, 0.5, -15)
+    checkmark.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    checkmark.Text = ""
+    checkmark.Parent = row
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = checkmark
+
+    local checkLabel = Instance.new("TextLabel")
+    checkLabel.Size = UDim2.new(1, 0, 1, 0)
+    checkLabel.BackgroundTransparency = 1
+    checkLabel.Text = ""
+    checkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    checkLabel.TextSize = 18
+    checkLabel.Font = Enum.Font.GothamBold
+    checkLabel.Parent = checkmark
+
+    toggles[text] = false
+
+    checkmark.MouseButton1Click:Connect(function()
+        toggles[text] = not toggles[text]
+        checkLabel.Text = toggles[text] and "✔" or ""
+
+        -- Tween for smooth color change
+        local goal = {BackgroundColor3 = toggles[text] and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(40, 40, 40)}
+        local tween = TweenService:Create(checkmark, TweenInfo.new(0.2), goal)
+        tween:Play()
+    end)
+end
+
+-- Create toggles
+makeCheckToggle("Start Trade Assist", 50)
+makeCheckToggle("Freeze Trade", 100)
+makeCheckToggle("Auto Ready Trade", 150)
+
+-- Dragging Feature (FIXED)
+local dragging, dragStart, startPos
+
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = UDim2.new(
+            main.Position.X.Scale,
+            main.Position.X.Offset,
+            main.Position.Y.Scale,
+            main.Position.Y.Offset
+        )
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Show GUI Function (Call this after loading screen is gone)
+local function showGui()
+    main.Visible = true
+end
+
+-- Example usage (Call this when the loading screen is removed)
+showGui()
